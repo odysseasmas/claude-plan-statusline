@@ -16,8 +16,23 @@ The plugin bundles three pieces:
 - A setup skill (`/claude-plan-statusline:setup`) that wires
   `~/.claude/settings.json` for you, non-destructively.
 
-Requires `jq` on `PATH` (for the status line script). Python 3 is used by
-the hook and ships with macOS.
+Requires `jq` on `PATH` (for the status line script) and Python 3 (for the
+hook — ships with macOS, present by default on most Linux distros).
+
+## Platforms
+
+| Platform           | Supported | Notes                                                                |
+|--------------------|-----------|----------------------------------------------------------------------|
+| macOS              | yes       | Tested. `jq` via Homebrew if not present.                            |
+| Linux              | yes       | Needs `jq` (apt/dnf/pacman) and a terminal with OSC 8 support — most modern ones (Kitty, WezTerm, GNOME Terminal, Konsole, Alacritty + config) qualify. |
+| Windows (WSL)      | yes       | Run Claude Code inside WSL; the script lives on the Linux side.      |
+| Windows (cmd/pwsh) | no        | The status line script is POSIX `sh`; there's no PowerShell port yet. |
+
+OSC 8 hyperlink support is what makes the plan link clickable. If your
+terminal doesn't render OSC 8, you'll still see the slug — it just won't
+be clickable. Click-to-open also needs the editor URI scheme (`vscode://`,
+`cursor://`, …) registered on your system; most editors register it on
+install.
 
 ## Install
 
