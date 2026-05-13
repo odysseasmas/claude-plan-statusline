@@ -4,7 +4,7 @@ Show the current Claude Code session's plan as a clickable link in the
 status line. Click it in the terminal and the plan opens straight in your
 editor.
 
-## Platforms
+## Supported platforms
 
 | Platform           | Supported | Notes                                                                |
 |--------------------|-----------|----------------------------------------------------------------------|
