@@ -38,6 +38,7 @@ allowed in a plugin's bundled `settings.json`). One line needs to land
 in `~/.claude/settings.json`; the setup skill handles it for you:
 
 - backs up your current `settings.json`,
+- asks which editor the plan link should open in (VS Code, Cursor, Zed, JetBrains),
 - if no `statusLine` exists, adds one pointing at the plugin's script,
 - if a `statusLine` is already there, **wraps** it — your existing
   command stays, and the plan link is appended on the end via
