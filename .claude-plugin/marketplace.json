@@ -2,7 +2,7 @@
   "name": "claude-plan-statusline",
   "owner": {
     "name": "Odysseas Masmanidis",
-    "url": "https://github.com/odymas"
+    "url": "https://github.com/odysseasmas"
   },
   "metadata": {
     "description": "Clickable plan link in the Claude Code status line."

@@ -23,7 +23,7 @@ the hook and ships with macOS.
 From within Claude Code:
 
 ```
-/plugin marketplace add odymas/claude-plan-statusline
+/plugin marketplace add odysseasmas/claude-plan-statusline
 /plugin install claude-plan-statusline@claude-plan-statusline
 ```
 
@@ -55,7 +55,7 @@ Edit `~/.claude/settings.json` and add:
 > **Path note**: `${CLAUDE_PLUGIN_ROOT}` is only expanded inside plugin-defined
 > commands (hooks, MCP, monitors) — it does **not** expand in user-level
 > `statusLine`, so use the absolute path above. After running
-> `/plugin marketplace add odymas/claude-plan-statusline`, the marketplace is
+> `/plugin marketplace add odysseasmas/claude-plan-statusline`, the marketplace is
 > cloned to `~/.claude/plugins/marketplaces/claude-plan-statusline/` and the
 > script lives there.
 >
