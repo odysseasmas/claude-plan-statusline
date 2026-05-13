@@ -130,8 +130,11 @@ bash $HOME/.claude/plugins/marketplaces/claude-plan-statusline/scripts/statuslin
    - The chosen editor URI and whether it overwrote a previous value.
    - The backup path (if any).
    - The exact diff of `statusLine` and `env` keys, before vs. after.
-   - The next step: "Restart Claude Code or run `/reload-plugins` for the
-     status line to refresh."
+   - The next step: tell the user to **trigger the hook** by writing or
+     editing any plan file in `~/.claude/plans/` — the new plan link
+     should appear in the status line on the next render. If it
+     doesn't, fall back to `/reload-plugins` or a full Claude Code
+     restart to apply.
 
 ## Important constraints
 
