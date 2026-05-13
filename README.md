@@ -91,25 +91,6 @@ Example for Cursor users:
 }
 ```
 
-## Compose with your own status line
-
-Two ways:
-
-**Wrap mode (recommended)** — point Claude Code at the plugin's script,
-and set `CLAUDE_PLAN_LINK_BASE` to your existing command. The plugin runs
-your script first, then appends ` | plan: <link>` if a mapping exists.
-The skill does this for you.
-
-**Fragment mode** — keep your own status line as the entry point and
-shell out to this plugin with `CLAUDE_PLAN_LINK_ONLY=1` to grab just the
-link fragment:
-
-```sh
-plan_fragment=$(CLAUDE_PLAN_LINK_ONLY=1 \
-  bash ~/.claude/plugins/marketplaces/claude-plan-statusline/scripts/statusline-command.sh <<< "$input")
-printf "%s | %s" "$your_existing_line" "$plan_fragment"
-```
-
 ## How it works
 
 ```
