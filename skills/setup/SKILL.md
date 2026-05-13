@@ -36,13 +36,19 @@ bash $HOME/.claude/plugins/marketplaces/claude-plan-statusline/scripts/statuslin
    - Parse it as JSON. If it doesn't parse, stop and report the parse
      error — don't try to "fix" it.
 
-2. **Back up** the file before any write:
+2. **Detect mode** — is the plugin already wired up?
+   - Treat the file as **already configured** when
+     `statusLine.command` is a string and contains the substring
+     `marketplaces/claude-plan-statusline/scripts/statusline-command.sh`.
+   - Otherwise this is a first-time **install**.
+
+3. **Back up** the file before any write:
    - Target path: `~/.claude/settings.json.bak-<UTC-timestamp>` where the
      timestamp is `YYYYMMDDTHHMMSSZ`.
    - Use `cp`; preserve permissions. Do this **only** if a write is about
-     to happen (skip the backup if the user chooses Skip below).
+     to happen (skip the backup on Reconfigure-no-change and on Case B-Skip).
 
-3. **Ask the user** what to do, using a single `AskUserQuestion` call.
+4. **Ask the user** what to do, using a single `AskUserQuestion` call.
 
    Always include the **editor** question (one of four options; the tool
    auto-adds "Other" so users can paste a custom URI):
@@ -58,16 +64,27 @@ bash $HOME/.claude/plugins/marketplaces/claude-plan-statusline/scripts/statuslin
    is already present in `settings.json`, show its current value in the
    question description so the user knows what they'd be overwriting.
 
-   Additionally, **if a `statusLine` key already exists**, include a
-   second question in the same `AskUserQuestion` call:
+   **If this is an Install** *and* a `statusLine` key already exists,
+   include a second question in the same `AskUserQuestion` call:
 
    - **Wrap (recommended)** — keep the existing line, just add the plan
      fragment on the end.
    - **Skip** — make no changes; print the manual snippet and exit.
 
-   If no `statusLine` key exists, only the editor question is asked.
+   On a **Reconfigure** (already wired up), do **not** ask the Wrap/Skip
+   question — the user just wants to change the editor. Skip it.
 
-4. **Apply the chosen path**:
+5. **Apply the chosen path**:
+
+   ### Reconfigure — already wired up, only the editor changes
+   - Compute `CURRENT_EDITOR_URI` = `env.CLAUDE_PLAN_LINK_EDITOR` if set,
+     else `vscode://file` (the script's default).
+   - If `EDITOR_URI == CURRENT_EDITOR_URI`: nothing to do. Skip the
+     backup, skip the write, and tell the user "already set to
+     `<EDITOR_URI>` — no change."
+   - Otherwise: ensure `env` exists, set `env.CLAUDE_PLAN_LINK_EDITOR =
+     EDITOR_URI`, leave `statusLine`, `env.CLAUDE_PLAN_LINK_BASE`, and
+     every other key untouched. Write, report the URI change.
 
    ### Case A — no `statusLine` key
    - Add the statusLine block:
@@ -103,13 +120,13 @@ bash $HOME/.claude/plugins/marketplaces/claude-plan-statusline/scripts/statuslin
      EDITOR_URI`, so the user has a complete recipe even if they want
      to apply it by hand later.
 
-5. **Write** the updated JSON back atomically:
+6. **Write** the updated JSON back atomically:
    - Write to `~/.claude/settings.json.tmp-<UTC-timestamp>` first.
    - `mv` it over `~/.claude/settings.json`.
    - Preserve original indentation if possible; otherwise default to 2-space.
 
-6. **Report** to the user:
-   - Which case fired (A or B-Wrap or B-Skip).
+7. **Report** to the user:
+   - Which path fired (Reconfigure / Case A / Case B-Wrap / Case B-Skip).
    - The chosen editor URI and whether it overwrote a previous value.
    - The backup path (if any).
    - The exact diff of `statusLine` and `env` keys, before vs. after.

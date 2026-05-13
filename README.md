@@ -30,6 +30,22 @@ From within Claude Code:
 /claude-plan-statusline:setup
 ```
 
+### Optional — remove the setup skill once you're done
+
+**Optional.** After `:setup` runs successfully, the skill's only
+remaining job is letting you change which editor opens the plan link
+(re-run `/claude-plan-statusline:setup` and pick a different one). If
+you'd rather not have it sitting in your skills list, delete it:
+
+```sh
+rm -rf ~/.claude/plugins/cache/claude-plan-statusline/claude-plan-statusline/*/skills/setup \
+       ~/.claude/plugins/marketplaces/claude-plan-statusline/skills/setup
+```
+
+Then `/reload-plugins`. The hook and status line keep working — you
+just lose the convenience skill. `/plugin install` will bring it back
+if you ever want it.
+
 ### What `:setup` does
 
 Plugins can ship hooks but **cannot register a status line** (Claude
