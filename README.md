@@ -27,7 +27,7 @@ From within Claude Code:
 /plugin marketplace add odysseasmas/claude-plan-statusline
 /plugin install claude-plan-statusline@claude-plan-statusline
 /reload-plugins
-/claude-plan-statusline:setup
+/claude-plan-statusline:setup  # Don't use auto-mode until after the setup wizard; otherwise claude might skip it
 ```
 
 ### Optional — remove the setup skill once you're done
