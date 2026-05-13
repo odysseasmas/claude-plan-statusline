@@ -36,33 +36,32 @@ install.
 
 ## Install
 
-### 1. Add the plugin
-
 From within Claude Code:
 
 ```
 /plugin marketplace add odysseasmas/claude-plan-statusline
 /plugin install claude-plan-statusline@claude-plan-statusline
-```
-
-> The marketplace name and the plugin name are the same — that's the
-> `<plugin>@<marketplace>` syntax above.
-
-The plugin's `PostToolUse` hook activates automatically — nothing else
-needed for the session-map to start populating.
-
-### 2. Wire up the status line
-
-Plugins can ship hooks but **cannot register a status line** (Claude Code
-restriction; only the `agent` and `subagentStatusLine` keys are allowed in
-a plugin's bundled `settings.json`). One line needs to land in
-`~/.claude/settings.json` — and the plugin ships a skill to do it for you.
-
-```
+/reload-plugins
 /claude-plan-statusline:setup
 ```
 
-The skill:
+### What you'll see
+
+After `:setup` finishes, restart Claude Code (or run `/reload-plugins`
+once more) and after the next plan is written your status line should
+show something like:
+
+```
+odymas:rainbow | claude-opus-4-7 | ctx: 34% | plan: my-feature-plan
+                                                    ^^^^^^^^^^^^^^^ clickable
+```
+
+### What `:setup` does
+
+Plugins can ship hooks but **cannot register a status line** (Claude
+Code restriction; only the `agent` and `subagentStatusLine` keys are
+allowed in a plugin's bundled `settings.json`). One line needs to land
+in `~/.claude/settings.json`; the setup skill handles it for you:
 
 - backs up your current `settings.json`,
 - if no `statusLine` exists, adds one pointing at the plugin's script,
@@ -70,14 +69,6 @@ The skill:
   command stays, and the plan link is appended on the end via
   `CLAUDE_PLAN_LINK_BASE`. Your dir / git / model / context rendering
   keeps working; the plan link sits at the end.
-
-Restart Claude Code (or run `/reload-plugins`) and after the next plan is
-written you should see something like:
-
-```
-odymas:rainbow | claude-opus-4-7 | ctx: 34% | plan: my-feature-plan
-                                                    ^^^^^^^^^^^^^^^ clickable
-```
 
 ### Manual setup (if you'd rather skip the skill)
 
