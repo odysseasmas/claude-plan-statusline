@@ -18,9 +18,9 @@ The status line script ships inside the marketplace clone at:
 $HOME/.claude/plugins/marketplaces/claude-plan-statusline/scripts/statusline-command.sh
 ```
 
-`${CLAUDE_PLUGIN_ROOT}` does **not** expand inside a user-level
-`statusLine.command`, so use the absolute path above (with `$HOME`
-literal — Claude Code expands it).
+The `CLAUDE_PLUGIN_ROOT` plugin-root token does **not** expand inside a
+user-level `statusLine.command`, so use the absolute path above (with
+`$HOME` literal — Claude Code expands it).
 
 The settings.json command we want to end up with is exactly:
 

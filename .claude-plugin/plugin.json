@@ -1,6 +1,6 @@
 {
   "name": "claude-plan-statusline",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Show the current Claude Code session's plan as a clickable link in the status line. Bundles a PostToolUse hook that maps session_id to plan path, a status line script that renders an OSC 8 hyperlink (vscode://, cursor://, zed:// configurable) and can wrap an existing status line, and a setup skill that wires settings.json non-destructively.",
   "author": {
     "name": "Odysseas Masmanidis"

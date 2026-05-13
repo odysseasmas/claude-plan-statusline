@@ -11,7 +11,7 @@
     {
       "name": "claude-plan-statusline",
       "source": "./",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "description": "Show the current Claude Code session's plan as a clickable link in the status line."
     }
   ]
