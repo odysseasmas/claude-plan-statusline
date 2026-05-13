@@ -13,6 +13,12 @@
 #   CLAUDE_PLAN_LINK_ONLY      If "1", emit ONLY the plan link (no user/dir/
 #                              model/ctx). Useful for composing into a custom
 #                              status line.
+#   CLAUDE_PLAN_LINK_BASE      A shell command to run as the "base" status
+#                              line. When set, the same stdin is piped into
+#                              it and its stdout is rendered, with the plan
+#                              link appended as " | plan: <link>" when a
+#                              mapping exists. Lets the plugin wrap an
+#                              existing status line non-destructively.
 
 input=$(cat)
 
@@ -44,6 +50,19 @@ fi
 
 if [ "$CLAUDE_PLAN_LINK_ONLY" = "1" ]; then
   printf "%s" "$plan_info"
+  exit 0
+fi
+
+# Wrap mode: if a base status line command is provided, run it with the
+# same stdin and append the plan link. Lets users keep their existing
+# status line and just add the plan link onto it.
+if [ -n "$CLAUDE_PLAN_LINK_BASE" ]; then
+  base_output=$(printf "%s" "$input" | eval "$CLAUDE_PLAN_LINK_BASE")
+  if [ -n "$plan_info" ]; then
+    printf "%s | %s" "$base_output" "$plan_info"
+  else
+    printf "%s" "$base_output"
+  fi
   exit 0
 fi
 

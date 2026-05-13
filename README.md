@@ -4,14 +4,17 @@ Show the current Claude Code session's plan as a clickable link in the
 status line. Click it in the terminal and the plan opens straight in your
 editor.
 
-The plugin bundles two pieces:
+The plugin bundles three pieces:
 
 - A `PostToolUse` hook (`hooks/plan-tracker.py`) that watches `Write`/`Edit`
   calls landing `.md` files in `~/.claude/plans/` and records
   `session_id → plan_path` in `~/.claude/plans/.session-map.json`.
 - A status line script (`scripts/statusline-command.sh`) that reads the map
   and renders an OSC 8 hyperlink to your editor of choice (`vscode://`,
-  `cursor://`, `zed://`, JetBrains `idea://` — configurable).
+  `cursor://`, `zed://`, JetBrains `idea://` — configurable). It can also
+  **wrap** an existing status line so you don't lose your current one.
+- A setup skill (`/claude-plan-statusline:setup`) that wires
+  `~/.claude/settings.json` for you, non-destructively.
 
 Requires `jq` on `PATH` (for the status line script). Python 3 is used by
 the hook and ships with macOS.
@@ -30,18 +33,40 @@ From within Claude Code:
 > The marketplace name and the plugin name are the same — that's the
 > `<plugin>@<marketplace>` syntax above.
 
-```
-
-The plugin's `PostToolUse` hook activates automatically — nothing else needed
-for the session-map to start populating.
+The plugin's `PostToolUse` hook activates automatically — nothing else
+needed for the session-map to start populating.
 
 ### 2. Wire up the status line
 
 Plugins can ship hooks but **cannot register a status line** (Claude Code
-restriction; only the `agent` and `subagentStatusLine` keys are allowed in a
-plugin's bundled `settings.json`). So you add one line yourself.
+restriction; only the `agent` and `subagentStatusLine` keys are allowed in
+a plugin's bundled `settings.json`). One line needs to land in
+`~/.claude/settings.json` — and the plugin ships a skill to do it for you.
 
-Edit `~/.claude/settings.json` and add:
+```
+/claude-plan-statusline:setup
+```
+
+The skill:
+
+- backs up your current `settings.json`,
+- if no `statusLine` exists, adds one pointing at the plugin's script,
+- if a `statusLine` is already there, **wraps** it — your existing
+  command stays, and the plan link is appended on the end via
+  `CLAUDE_PLAN_LINK_BASE`. Your dir / git / model / context rendering
+  keeps working; the plan link sits at the end.
+
+Restart Claude Code (or run `/reload-plugins`) and after the next plan is
+written you should see something like:
+
+```
+odymas:rainbow | claude-opus-4-7 | ctx: 34% | plan: my-feature-plan
+                                                    ^^^^^^^^^^^^^^^ clickable
+```
+
+### Manual setup (if you'd rather skip the skill)
+
+Edit `~/.claude/settings.json`:
 
 ```json
 {
@@ -52,29 +77,27 @@ Edit `~/.claude/settings.json` and add:
 }
 ```
 
-> **Path note**: `${CLAUDE_PLUGIN_ROOT}` is only expanded inside plugin-defined
-> commands (hooks, MCP, monitors) — it does **not** expand in user-level
-> `statusLine`, so use the absolute path above. After running
-> `/plugin marketplace add odysseasmas/claude-plan-statusline`, the marketplace is
-> cloned to `~/.claude/plugins/marketplaces/claude-plan-statusline/` and the
-> script lives there.
->
-> If you'd rather not bake the marketplace path into settings, symlink it:
->
-> ```bash
-> ln -s ~/.claude/plugins/marketplaces/claude-plan-statusline/scripts/statusline-command.sh \
->       ~/.claude/statusline-command.sh
-> ```
->
-> then point `command` at `bash ~/.claude/statusline-command.sh`.
+To wrap your existing status line by hand, move your old command into
+`env.CLAUDE_PLAN_LINK_BASE`:
 
-Restart Claude Code (or run `/reload-plugins`) and you should see, after the
-next plan is written, something like:
+```json
+{
+  "env": {
+    "CLAUDE_PLAN_LINK_BASE": "bash ~/.claude/statusline-command.sh"
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "bash $HOME/.claude/plugins/marketplaces/claude-plan-statusline/scripts/statusline-command.sh"
+  }
+}
+```
 
-```
-odymas:rainbow | claude-opus-4-7 | ctx: 34% | plan: my-feature-plan
-                                                    ^^^^^^^^^^^^^^^ clickable
-```
+> **Path note**: `${CLAUDE_PLUGIN_ROOT}` is only expanded inside
+> plugin-defined commands (hooks, MCP, monitors) — it does **not** expand
+> in user-level `statusLine`, so use the absolute path above. After
+> running `/plugin marketplace add odysseasmas/claude-plan-statusline`,
+> the marketplace is cloned to
+> `~/.claude/plugins/marketplaces/claude-plan-statusline/`.
 
 ## Configure
 
@@ -84,6 +107,7 @@ Set these env vars in your shell or in `~/.claude/settings.json` under
 | Var                       | Default         | Description                                                                                       |
 |---------------------------|-----------------|---------------------------------------------------------------------------------------------------|
 | `CLAUDE_PLAN_LINK_EDITOR` | `vscode://file` | URI prefix prepended to the absolute plan path.                                                   |
+| `CLAUDE_PLAN_LINK_BASE`   | unset           | Shell command to run as the base status line; its output is wrapped with `\| plan: <link>` appended. |
 | `CLAUDE_PLAN_LINK_ONLY`   | unset           | If `1`, emit only the `plan: <link>` fragment — useful for composing into your own status line.   |
 
 ### Editor URIs
@@ -107,12 +131,20 @@ Example for Cursor users:
 
 ## Compose with your own status line
 
-If you already have a status line script, set `CLAUDE_PLAN_LINK_ONLY=1` and
-shell out to this plugin's script to get just the link fragment:
+Two ways:
+
+**Wrap mode (recommended)** — point Claude Code at the plugin's script,
+and set `CLAUDE_PLAN_LINK_BASE` to your existing command. The plugin runs
+your script first, then appends ` | plan: <link>` if a mapping exists.
+The skill does this for you.
+
+**Fragment mode** — keep your own status line as the entry point and
+shell out to this plugin with `CLAUDE_PLAN_LINK_ONLY=1` to grab just the
+link fragment:
 
 ```sh
 plan_fragment=$(CLAUDE_PLAN_LINK_ONLY=1 \
-  bash ~/.claude/statusline-command.sh <<< "$input")
+  bash ~/.claude/plugins/marketplaces/claude-plan-statusline/scripts/statusline-command.sh <<< "$input")
 printf "%s | %s" "$your_existing_line" "$plan_fragment"
 ```
 
@@ -132,8 +164,8 @@ hyperlink to         looks up session_id,
 the plan file        emits vscode:// link
 ```
 
-The hook only triggers for `.md` files under `~/.claude/plans/`, so it has
-no measurable impact on other Write/Edit calls.
+The hook only triggers for `.md` files under `~/.claude/plans/`, so it
+has no measurable impact on other Write/Edit calls.
 
 ## Uninstall
 
@@ -142,7 +174,8 @@ no measurable impact on other Write/Edit calls.
 ```
 
 Then remove the `statusLine` block you added to `~/.claude/settings.json`
-and delete `~/.claude/plans/.session-map.json` if you want.
+(or restore from the `settings.json.bak-*` file the setup skill left
+behind) and delete `~/.claude/plans/.session-map.json` if you want.
 
 ## License
 
