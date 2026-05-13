@@ -30,17 +30,6 @@ From within Claude Code:
 /claude-plan-statusline:setup
 ```
 
-### What you'll see
-
-After `:setup` finishes, restart Claude Code (or run `/reload-plugins`
-once more) and after the next plan is written your status line should
-show something like:
-
-```
-odymas:rainbow | claude-opus-4-7 | ctx: 34% | plan: my-feature-plan
-                                                    ^^^^^^^^^^^^^^^ clickable
-```
-
 ### What `:setup` does
 
 Plugins can ship hooks but **cannot register a status line** (Claude
