@@ -1,3 +1,5 @@
+<img width="612" height="128" alt="plan-in-status-line" src="https://github.com/user-attachments/assets/155f5c90-24e1-4f9a-9a70-d0dfec464bf0" />
+
 # claude-plan-statusline
 
 Show the current Claude Code session's plan as a clickable link in the
@@ -29,6 +31,9 @@ From within Claude Code:
 /reload-plugins
 /claude-plan-statusline:setup  # Don't use auto-mode until after the setup wizard; otherwise claude might skip it
 ```
+
+https://github.com/user-attachments/assets/ca0dddf3-00fa-4305-9876-da94ce607dea
+
 
 ### Optional — remove the setup skill once you're done
 
