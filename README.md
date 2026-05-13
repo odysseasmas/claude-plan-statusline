@@ -44,41 +44,6 @@ in `~/.claude/settings.json`; the setup skill handles it for you:
   `CLAUDE_PLAN_LINK_BASE`. Your dir / git / model / context rendering
   keeps working; the plan link sits at the end.
 
-### Manual setup (if you'd rather skip the skill)
-
-Edit `~/.claude/settings.json`:
-
-```json
-{
-  "statusLine": {
-    "type": "command",
-    "command": "bash $HOME/.claude/plugins/marketplaces/claude-plan-statusline/scripts/statusline-command.sh"
-  }
-}
-```
-
-To wrap your existing status line by hand, move your old command into
-`env.CLAUDE_PLAN_LINK_BASE`:
-
-```json
-{
-  "env": {
-    "CLAUDE_PLAN_LINK_BASE": "bash ~/.claude/statusline-command.sh"
-  },
-  "statusLine": {
-    "type": "command",
-    "command": "bash $HOME/.claude/plugins/marketplaces/claude-plan-statusline/scripts/statusline-command.sh"
-  }
-}
-```
-
-> **Path note**: `${CLAUDE_PLUGIN_ROOT}` is only expanded inside
-> plugin-defined commands (hooks, MCP, monitors) — it does **not** expand
-> in user-level `statusLine`, so use the absolute path above. After
-> running `/plugin marketplace add odysseasmas/claude-plan-statusline`,
-> the marketplace is cloned to
-> `~/.claude/plugins/marketplaces/claude-plan-statusline/`.
-
 ## What's inside
 
 The plugin bundles three pieces:
