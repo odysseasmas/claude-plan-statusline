@@ -4,21 +4,6 @@ Show the current Claude Code session's plan as a clickable link in the
 status line. Click it in the terminal and the plan opens straight in your
 editor.
 
-The plugin bundles three pieces:
-
-- A `PostToolUse` hook (`hooks/plan-tracker.py`) that watches `Write`/`Edit`
-  calls landing `.md` files in `~/.claude/plans/` and records
-  `session_id → plan_path` in `~/.claude/plans/.session-map.json`.
-- A status line script (`scripts/statusline-command.sh`) that reads the map
-  and renders an OSC 8 hyperlink to your editor of choice (`vscode://`,
-  `cursor://`, `zed://`, JetBrains `idea://` — configurable). It can also
-  **wrap** an existing status line so you don't lose your current one.
-- A setup skill (`/claude-plan-statusline:setup`) that wires
-  `~/.claude/settings.json` for you, non-destructively.
-
-Requires `jq` on `PATH` (for the status line script) and Python 3 (for the
-hook — ships with macOS, present by default on most Linux distros).
-
 ## Platforms
 
 | Platform           | Supported | Notes                                                                |
@@ -104,6 +89,23 @@ To wrap your existing status line by hand, move your old command into
 > running `/plugin marketplace add odysseasmas/claude-plan-statusline`,
 > the marketplace is cloned to
 > `~/.claude/plugins/marketplaces/claude-plan-statusline/`.
+
+## What's inside
+
+The plugin bundles three pieces:
+
+- A `PostToolUse` hook (`hooks/plan-tracker.py`) that watches `Write`/`Edit`
+  calls landing `.md` files in `~/.claude/plans/` and records
+  `session_id → plan_path` in `~/.claude/plans/.session-map.json`.
+- A status line script (`scripts/statusline-command.sh`) that reads the map
+  and renders an OSC 8 hyperlink to your editor of choice (`vscode://`,
+  `cursor://`, `zed://`, JetBrains `idea://` — configurable). It can also
+  **wrap** an existing status line so you don't lose your current one.
+- A setup skill (`/claude-plan-statusline:setup`) that wires
+  `~/.claude/settings.json` for you, non-destructively.
+
+Requires `jq` on `PATH` (for the status line script) and Python 3 (for the
+hook — ships with macOS, present by default on most Linux distros).
 
 ## Configure
 
